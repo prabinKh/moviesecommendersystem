@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        form {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        select {
+            padding: 8px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 8px 16px;
+        }
+        .recommendations {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .movie {
+            text-align: center;
+        }
+        img {
+            width: 150px;
+            height: auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Movie Recommender System</h1>
+    
+    <!-- Movie Selection Form -->
+    <form method="POST">
+        {% csrf_token %}
+        <label for="movie">Select a movie:</label>
+        <input type="text" id="movie-search" placeholder="Type a movie name..." autocomplete="off">
+        <select name="selected_movie" id="movie-select" style="display:none;">
+            <!-- Dynamically generate movie options -->
+            {% for movie in movie_list %}
+                <option value="{{ movie }}"> {{movie}} </option>
+            {% endfor %}
+        </select>
+        <button type="submit">Show Recommendation</button>
+        <div id="suggestions"></div>
+    </form>
+
+
+    <!-- Display Recommendations if available -->
+    {% if recommendations %}
+        <h2>Recommended Movies:</h2>
+        <div class="recommendations">
+            <!-- Loop through recommended movies and posters -->
+            {% for name, poster in recommendations %}
+                <div class="movie">
+                    <p>{{ name }}</p>
+                    <img src="{{ poster }}" alt="{{ name }}">
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('movie-search');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const movieSelect = document.getElementById('movie-select');
+        const movieOptions = Array.from(movieSelect.options).map(option => option.value);
+        
+        searchInput.addEventListener('input', function() {
+            const query = searchInput.value.toLowerCase();
+            suggestionsDiv.innerHTML = '';
+
+            if (query) {
+                const filteredMovies = movieOptions.filter(movie => movie.toLowerCase().includes(query));
+                if (filteredMovies.length) {
+                    suggestionsDiv.style.display = 'block';
+                    filteredMovies.forEach(movie => {
+                        const div = document.createElement('div');
+                        div.textContent = movie;
+                        div.addEventListener('click', function() {
+                            searchInput.value = movie;
+                            movieSelect.value = movie; // Set the hidden select value
+                        });
+                        suggestionsDiv.appendChild(div);
+                    });
+                } 
+            } 
+        });
+
+       
+    });
+</script>
+
+</html>
