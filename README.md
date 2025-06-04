@@ -104,3 +104,27 @@ def fetch_poster(movie_id):
   
       return render(request, 'recommendation.html', {'movie_list': movie_list})
 ```
+
+
+###Saving the Model
+```python
+import pickle
+pickle.dump(movies, open('movie_list.pkl', 'wb'))
+pickle.dump(similarity, open('similarity.pkl', 'wb'))
+```
+###Requirements
+-Install dependencies:
+`pip install -r requirements.txt`
+
+###How to Run
+```
+git clone https://github.com/your-username/movie-recommender-django.git
+cd movie-recommender-django
+```
+
+
+#Start the Django server
+``
+python manage.py runserver
+
+``
