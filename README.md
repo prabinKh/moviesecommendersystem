@@ -68,3 +68,38 @@ def recommend(movie):
         recommended_movie_names.append(movies.iloc[i[0]].title)
         recommended_movie_posters.append(fetch_poster(movie_id))
     return recommended_movie_names, recommended_movie_posters
+
+
+def fetch_poster(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?api_key=YOUR_API_KEY&language=en-US"
+    data = requests.get(url).json()
+    poster_path = data['poster_path']
+    full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
+    return full_path
+
+
+###Django View Logic
+-Handles GET & POST requests.
+
+-On form submission, recommends movies using the saved model.
+
+```python 
+  def movie_recommender(request):
+      with open('movie_list.pkl', 'rb') as f:
+          movies = pickle.load(f)
+      with open('similarity.pkl', 'rb') as f:
+          similarity = pickle.load(f)
+      
+      movie_list = movies['title'].values
+      if request.method == 'POST':
+          selected_movie = request.POST.get('selected_movie')
+          recommended_movie_names, recommended_movie_posters = recommend(selected_movie)
+          recommendations = zip(recommended_movie_names, recommended_movie_posters)
+          context = {
+              'movie_list': movie_list,
+              'selected_movie': selected_movie,
+              'recommendations': recommendations,
+          }
+          return render(request, 'recommendation.html', context)
+  
+      return render(request, 'recommendation.html', {'movie_list': movie_list})
