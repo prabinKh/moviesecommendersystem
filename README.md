@@ -76,7 +76,7 @@ def fetch_poster(movie_id):
     poster_path = data['poster_path']
     full_path = "https://image.tmdb.org/t/p/w500/" + poster_path
     return full_path
-
+```
 
 ###Django View Logic
 -Handles GET & POST requests.
@@ -103,3 +103,4 @@ def fetch_poster(movie_id):
           return render(request, 'recommendation.html', context)
   
       return render(request, 'recommendation.html', {'movie_list': movie_list})
+```
